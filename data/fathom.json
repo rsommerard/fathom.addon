@@ -120,6 +120,7 @@
         "max_queue" : 1000,
         "max_batch" : 50,
         "interval" : 1200,
-        "url" : "https://muse.inria.fr/fathomupload"
+        "url" : "https://muse.inria.fr/fathomupload",
+        "apisense": "http://localhost:4001/fathomupload"
     }
 }
