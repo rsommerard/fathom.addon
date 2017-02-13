@@ -74,8 +74,12 @@ var cleanup = function() {
         NSPR.sockets.PR_Close(worker.socket);
     }
     worker.socket = undefined;
-    NSPR.closeLib();
-    NSPR = {}    
+    
+    if (NSPR.closeLib) {
+      NSPR.closeLib();
+    }
+    
+    NSPR = {};
 };
 
 var sendres = function(id) {
