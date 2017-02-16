@@ -1,5 +1,8 @@
 importScripts("./debug.js");
 
+const packageIdentifier = "fr.inria.muse.fathom";
+const sdkkey = "110e8400-e29b-11d4-a716-446655440000";
+
 const tag = 'apisense';
 
 onerror = function(event) { 
@@ -21,8 +24,6 @@ onmessage = function(event) {
 const login = function() {
   return new Promise(function (resolve, reject) {
     const url = "http://localhost:4000/v1/login";
-    const packageIdentifier = "fr.inria.muse.fathom";
-    const sdkkey = "110e8400-e29b-11d4-a716-446655440000";
     const content = "{ \"username\": \"" + packageIdentifier + "\", \"password\": \"" + sdkkey + "\"}";
   
     const xhr = new XMLHttpRequest();
@@ -33,7 +34,9 @@ const login = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           debug(tag, xhr.response);
-          resolve(JSON.parse(xhr.response).token);
+          const token = JSON.parse(xhr.response).token;
+
+          resolve(token);
         } else {
           error(tag, xhr.statusText);
           reject({
@@ -58,8 +61,6 @@ const login = function() {
 const cropsInfo = function(token) {
   return new Promise(function (resolve, reject) {
     const url = "http://localhost:4000/v1/crops/12345";
-    const packageIdentifier = "fr.inria.muse.fathom";
-    const sdkkey = "110e8400-e29b-11d4-a716-446655440000";
   
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url);
@@ -93,9 +94,6 @@ const cropsInfo = function(token) {
 
 const uploadMeasurements = function(url, dataToken, data) {
   return new Promise(function (resolve, reject) {
-    const packageIdentifier = "fr.inria.muse.fathom";
-    const sdkkey = "110e8400-e29b-11d4-a716-446655440000";
-  
     const xhr = new XMLHttpRequest();
     xhr.open("POST", url);
     xhr.setRequestHeader("Content-Type", 'application/json');
