@@ -117,7 +117,7 @@ sys.doPingTr = function(callback, host, opt, incrementaloutput) {
  * @param {boolean} incrementaloutput Send incremental output.
  */
 sys.doIperf = function(callback, host, opt, incrementaloutput) {
-    makereq(callback, "system", "doIperf", [host, opt], inc);
+    makereq(callback, "system", "doIperf", [host, opt], incrementaloutput);
 };
 
 /** 
