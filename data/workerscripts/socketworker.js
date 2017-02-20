@@ -129,7 +129,12 @@ onmessage = function(event) {
             importScripts("./nspr.js");
 
             // high-res timer
-            gettime = function() { return NSPR.util.PR_Now()/1000.0; };
+            gettime = function() {
+                if (NSPR.util)
+                    return NSPR.util.PR_Now()/1000.0;
+
+                return new Date().getTime();
+            };
 
             // Socket methods, exported to socket.*
             importScripts("./socket.js");
