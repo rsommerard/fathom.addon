@@ -34,7 +34,7 @@ socket.broadcastOpenReceiveSocket = function(port) {
   if (!s || s === -1)
     return {error: "Error creating socket: " + NSPR.errors.PR_GetError()};
 
-  var res = socket.setSocketOptionRet(s,'reuseaddr',true); 
+  var res = socket.setSocketOption(s,'reuseaddr',true); 
   if (res.error) {
     NSPR.sockets.PR_Close(s);
     return res;
