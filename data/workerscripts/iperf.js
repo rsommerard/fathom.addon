@@ -395,7 +395,7 @@ tools.iperf = (function() {
 
 	var flags = message.getInt32((offset+0)*4, true); 
 	if (flags !== 0x80)
-	    debug("invalid ack header flag " + flags);
+	    debug('iperf', "invalid ack header flag " + flags);
 
 	var total_len1 = message.getInt32((offset+1)*4, false);
 	var total_len2 = message.getInt32((offset+2)*4, false);
@@ -432,7 +432,7 @@ tools.iperf = (function() {
 	opt.option = option;
 	var rv = NSPR.sockets.PR_GetSocketOption(settings.mSock, opt.address());
 	if (rv < 0) {
-	    debug("failed to get socket option " + opt.option);
+	    debug('iperf', "failed to get socket option " + opt.option);
 	    return rv;
 	}
 	return opt.value;
@@ -586,7 +586,7 @@ tools.iperf = (function() {
 
     // client/server final report
     var closeReport = function(report, ts) {
-	debug("close " + (report.client ? "client" : "server") + " report");
+	debug('iperf', "close " + (report.client ? "client" : "server") + " report");
 	var obj = {
 	    timestamp : (new Date()).getTime(),
 	    sendip : report.clientIP,
@@ -700,7 +700,7 @@ tools.iperf = (function() {
 	settings.local.ip = NSPR.util.NetAddrToString(local);
 	settings.local.port = NSPR.util.PR_ntohs(local.port);
 
-	debug("client "+settings.local.ip + ":"+
+	debug('iperf', "client "+settings.local.ip + ":"+
 	      settings.local.port+" proto="+(settings.mUDP ? "udp":"tcp"));
 
 	var peer = NSPR.types.PRNetAddr();
@@ -709,7 +709,7 @@ tools.iperf = (function() {
 	settings.peer.ip = NSPR.util.NetAddrToString(peer);
 	settings.peer.port = NSPR.util.PR_ntohs(peer.port);
 
-	debug("connected to "+settings.peer.ip + ":"+settings.peer.port);
+	debug('iperf', "connected to "+settings.peer.ip + ":"+settings.peer.port);
 
 	// connection done - ready to start the test
 	settings.mTransferID += 1;
@@ -769,7 +769,7 @@ tools.iperf = (function() {
 
 	    if (!settings.mUDP) {
 		if (settings.mMode === TestMode.kTest_TradeOff) {
-		    debug("-- switching to tradeoff server mode --");
+		    debug('iperf', "-- switching to tradeoff server mode --");
 		    // cleanup the client socket
 		    NSPR.sockets.PR_Close(settings.mSock);
 		    settings.mSock = undefined;
@@ -792,13 +792,13 @@ tools.iperf = (function() {
 
 	    var finloop = function() {
 		if (retryc == 0) {
-		    debug("no server report after 10 retries");
+		    debug('iperf', "no server report after 10 retries");
 		    shutdown(report.finalres);
 		    return;
 		}
 
 		if (!settings.mSock || settings.mStopReq) {
-		    debug("client terminated, did not receive server report");
+		    debug('iperf', "client terminated, did not receive server report");
 		    shutdown({interrupted : true});
 		    return;
 		}
@@ -824,7 +824,7 @@ tools.iperf = (function() {
 		    addServerReport(report, recvrep);
 
 		    if (settings.mMode === TestMode.kTest_TradeOff) {
-			debug("-- switching to tradeoff server mode --");
+			debug('iperf', "-- switching to tradeoff server mode --");
 			// cleanup the client socket
 			NSPR.sockets.PR_Close(settings.mSock);
 			settings.mSock = undefined;
@@ -893,7 +893,7 @@ tools.iperf = (function() {
 
 		} else if (settings.mMode === TestMode.kTest_ServeClient) {
 		    // first packet is sent - switch to server mode
-		    debug("-- switching to server mode --");
+		    debug('iperf', "-- switching to server mode --");
 		    if (settings.mUDP) {
 			udp_single_server(undefined, report);
 		    } else {
@@ -948,7 +948,7 @@ tools.iperf = (function() {
 	// continue to fill existing report or create a new
 	var report = clireport;
 	if (!report) {
-	    debug("udp_single_server init report");
+	    debug('iperf', "udp_single_server init report");
 	    report = {
 		server : true,
 		finalres : initres(), // report for the UI
@@ -1030,7 +1030,7 @@ tools.iperf = (function() {
 		    }
 		} else {
 		    // errors in sending - stop trying
-		    debug("failed to send ack: " + NSPR.errors.PR_GetError());
+		    debug('iperf', "failed to send ack: " + NSPR.errors.PR_GetError());
 		    setTimeout(function() { cb(); }, 0);
 		    return;
 		}
@@ -1083,7 +1083,7 @@ tools.iperf = (function() {
 			curr_peeraddr = peeraddr;
 			reset(ts);
 			
-			debug("UDP connection from " + 
+			debug('iperf', "UDP connection from " + 
 			      settings.peer.ip + ":" + 
 			      settings.peer.port);
 		    }
@@ -1200,7 +1200,7 @@ tools.iperf = (function() {
 
 	var report = clireport;
 	if (!report) {
-	    debug("tcp_single_server init report");
+	    debug('iperf', "tcp_single_server init report");
 	    report = {
 		server : true,
 		finalres : initres()
@@ -1317,7 +1317,7 @@ tools.iperf = (function() {
 	const LIST_TO = NSPR.util.PR_MillisecondsToInterval(250);
 	settings.mThreadMode = ThreadMode.kMode_Listener;
 
-	debug("listener has report? " + clireport + 
+	debug('iperf', "listener has report? " + clireport + 
 	      " testmode="+settings.mMode);
 
 	// create listening socket
@@ -1386,7 +1386,7 @@ tools.iperf = (function() {
 	settings.local.ip = NSPR.util.NetAddrToString(local);
 	settings.local.port = NSPR.util.PR_ntohs(local.port);
 
-	debug("server listening at "+settings.local.ip + ":"+
+	debug('iperf', "server listening at "+settings.local.ip + ":"+
 	      settings.local.port+" proto="+
 	      (settings.mUDP ? "UDP":"TCP"));
 
@@ -1416,7 +1416,7 @@ tools.iperf = (function() {
 		    settings.peer.port = NSPR.util.PR_ntohs(peeraddr.port);
 		    settings.mTransferID += 1;
 
-		    debug("UDP connection from " + settings.peer.ip + ":" + 
+		    debug('iperf', "UDP connection from " + settings.peer.ip + ":" + 
 			  settings.peer.port);
 
 		    if (settings.mMode === TestMode.kTest_TradeOff) {
@@ -1425,7 +1425,7 @@ tools.iperf = (function() {
 		    } else {
 			// handle this client
 			udp_single_server(function() {
-			    debug("back in listener");
+			    debug('iperf', "back in listener");
 			    if (!settings.mSingleUDP) {
 				// continue receiving clients, pass through 
 				// the main event loop in case somebody wants 
@@ -1465,7 +1465,7 @@ tools.iperf = (function() {
 		    settings.peer.port = NSPR.util.PR_ntohs(peeraddr.port);	
 		    settings.mTransferID += 1;
 
-		    debug("TCP connection from " + settings.peer.ip + ":" + 
+		    debug('iperf', "TCP connection from " + settings.peer.ip + ":" + 
 			  settings.peer.port);
 
 		    // handle the client
@@ -1475,7 +1475,7 @@ tools.iperf = (function() {
 			tcp_single_server(undefined,clireport);
 		    } else {
 			tcp_single_server(function() {
-			    debug("back in listener");
+			    debug('iperf', "back in listener");
 			    NSPR.sockets.PR_Close(settings.mSockIn);
 			    settings.mSockIn = undefined;
 			    // continue receiving clients, pass through 
@@ -1536,7 +1536,7 @@ tools.iperf = (function() {
 	    }
 	}
 	settings.callback = callback;
-	debug(settings);
+	debug('iperf', settings);
 
 
 	var ret = undefined;
